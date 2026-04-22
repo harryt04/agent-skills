@@ -1,0 +1,5 @@
+.DS_Store
+release-candidate-analyzer/*
+skill-creator/*
+find-skills/*
+peer-review/*

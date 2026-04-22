@@ -1,0 +1,82 @@
+[
+  {
+    "query": "I have this cool idea for a SaaS product that helps teams track their engineering velocity. Where do I start?",
+    "should_trigger": true
+  },
+  {
+    "query": "write me a PRD for a document collaboration tool",
+    "should_trigger": true
+  },
+  {
+    "query": "I need to generate a TRD from this PRD I've got. The PRD is at .agents/spec/PRD.md in my project root",
+    "should_trigger": true
+  },
+  {
+    "query": "create an orchestration plan for implementing this feature",
+    "should_trigger": true
+  },
+  {
+    "query": "help me write test coverage for the auth module. I just pushed changes to fix JWT token expiry",
+    "should_trigger": true
+  },
+  {
+    "query": "I want a PR description for my feature branch. It's got about 3 new components and updates to the API layer",
+    "should_trigger": true
+  },
+  {
+    "query": "spec out a new feature for my project. I'm building a real-time chat app and I want users to be able to pin messages and search within conversations",
+    "should_trigger": true
+  },
+  {
+    "query": "orchestrate this project so I can execute it in parallel with sub-agents",
+    "should_trigger": true
+  },
+  {
+    "query": "I've got a TRD but I'm not sure about the database schema. Can you help me think through whether I should use PostgreSQL or MongoDB?",
+    "should_trigger": true
+  },
+  {
+    "query": "help me plan out a feature. I think users should be able to export data in CSV, JSON, and XML formats",
+    "should_trigger": true
+  },
+  {
+    "query": "write a simple Python script that reads a CSV file and prints each row",
+    "should_trigger": false
+  },
+  {
+    "query": "debug this JavaScript error: TypeError: Cannot read property 'name' of undefined",
+    "should_trigger": false
+  },
+  {
+    "query": "I need to write unit tests for my React component. How do I use React Testing Library?",
+    "should_trigger": false
+  },
+  {
+    "query": "explain the difference between REST and GraphQL APIs",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm getting a git merge conflict in my package.json file. How do I resolve it?",
+    "should_trigger": false
+  },
+  {
+    "query": "write documentation for my API endpoints. I've got 12 routes that handle CRUD operations on a User resource",
+    "should_trigger": false
+  },
+  {
+    "query": "generate some sample test data for my database — I need about 100 fake user records",
+    "should_trigger": false
+  },
+  {
+    "query": "I'm refactoring my code. Can you help me extract this function into a separate file?",
+    "should_trigger": false
+  },
+  {
+    "query": "my feature is done and it passed code review. I just need to write a commit message that summarizes the changes",
+    "should_trigger": false
+  },
+  {
+    "query": "I want to start tracking project progress and deliverables. Should I use Linear, Jira, or Trello?",
+    "should_trigger": false
+  }
+]
