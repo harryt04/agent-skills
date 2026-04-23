@@ -1,7 +1,7 @@
 ---
 name: spec-driven-development
 description: >
-  Guides feature planning and implementation through a document-driven workflow. Stages: App Outline → PRD → TRD → Orchestration → Execution → Tests → PR Description.
+  Guides feature planning and implementation through a document-driven workflow. Stages: App Outline → PRD → TRD → Orchestration → Execution → Implementation Cross-Check → Tests → PR Description.
   Use this skill to: write or refine a PRD (product requirements), build a cross-repo feature plan through interactive Q&A,
   write or refine a TRD (technical requirements), create an orchestration plan to execute work in parallel,
   generate test coverage for a branch, write a PR description, plan a new feature or project idea, spec out a product,
@@ -19,16 +19,17 @@ This skill guides you through a structured, document-driven workflow for buildin
 ## The Pipeline
 
 ```
-Stage 1: App Outline / Context Gathering   (Haiku or Sonnet)
-Stage 2: PRD — Product Requirements Doc   (Opus)
-Stage 3: TRD — Technical Requirements Doc (Opus)
-Stage 4: Orchestration Plan               (Opus)
-Stage 5: Execute the Orchestration Plan   (Haiku or Sonnet per work unit)
-Stage 6: Test Coverage                    (Haiku or Sonnet)
-Stage 7: PR Description                   (Haiku or Sonnet)
+Stage 1: App Outline / Context Gathering   (sonnet 4.6 default; haiku latest for lightweight)
+Stage 2: PRD — Product Requirements Doc   (opus 4.6 default; gpt 5.4 strong alternative)
+Stage 3: TRD — Technical Requirements Doc (opus 4.6 default; gpt 5.4 strong alternative)
+Stage 4: Orchestration Plan               (gpt 5.4 default; opus 4.6 alternative)
+Stage 5: Execute the Orchestration Plan   (codex 5.3 default per WU; sonnet 4.6 alternative)
+Stage 6: Implementation Cross-Check       (gpt 5.4 default; opus 4.6 alternative)
+Stage 7: Test Coverage                    (sonnet 4.6 default; codex 5.3 for test writing)
+Stage 8: PR Description                   (haiku latest default; sonnet 4.6 alternative)
 ```
 
-You can enter at any stage. If you already have a TRD, start at Stage 4. If you just want a PR description, jump straight to Stage 7.
+You can enter at any stage. If you already have a TRD, start at Stage 4. If execution is already done, jump straight to Stage 6 for implementation cross-check. If you just want a PR description, jump straight to Stage 8.
 
 All generated documents go in `.agents/spec/` in the project root.
 
@@ -60,9 +61,9 @@ All templates and prompt instructions are in the `references/` directory alongsi
 | `references/orchestration-template.md` | Stage 4 |
 | `references/memory-template.md` | Stage 4 (companion memory file) |
 | `references/orchestration-instructions.md` | Stage 4 (how to build the plan) |
-| `references/test-coverage-instructions.md` | Stage 6 |
-| `references/pull-request-instructions.md` | Stage 7 |
-| `references/ado-wiki-markdown-reference.md` | Stage 7 (optional markdown formatting reference) |
+| `references/test-coverage-instructions.md` | Stage 7 |
+| `references/pull-request-instructions.md` | Stage 8 |
+| `references/ado-wiki-markdown-reference.md` | Stage 8 (optional markdown formatting reference) |
 
 ---
 
@@ -188,11 +189,43 @@ Do not begin execution until the developer explicitly approves.
    - Update the status checkboxes in `ORCHESTRATION.md` as units complete or fail.
 4. If a work unit fails, surface the error to the developer immediately. Do not continue to the next layer until they decide to retry, modify, or skip.
 
-**After execution:** Summarize what was done, note any failures or skipped units, and ask if they want to proceed to test coverage (Stage 6) or make manual adjustments first.
+**After execution:** Summarize what was done, note any failures or skipped units, then ask: "Execution is complete. Do you want to run the Implementation Cross-Check now to verify TRD completeness before tests?" If they say no, explicitly tell them they can start a fresh session later and jump directly to Stage 6.
 
 ---
 
-## Stage 6: Test Coverage
+## Stage 6: Implementation Cross-Check
+
+**Recommended model:** Sonnet or Opus — this stage requires careful requirement-by-requirement verification and gap detection.
+
+**Goal:** Verify that implementation is complete and aligned with the finalized TRD at 100%, with nothing missed before test planning and PR write-up.
+
+**Steps:**
+
+1. Read `.agents/spec/TRD.md`, `.agents/spec/TRD-summary.md` (if present), `.agents/spec/ORCHESTRATION.md`, and `.agents/spec/memory.md`.
+2. Inspect the current branch changes and resulting code state.
+3. Spawn one or more cross-check sub-agents (if needed) to independently validate completeness:
+   - Map every TRD requirement, work unit, and acceptance criterion to concrete implementation evidence (files, functions, tests, config, migrations, or docs).
+   - Flag anything partially implemented, missing, or inconsistent with the TRD.
+   - Identify anything marked done in orchestration/memory that does not actually appear in code.
+4. Consolidate findings into `.agents/spec/IMPLEMENTATION-CROSS-CHECK.md` with three sections:
+   - `Fully Satisfied` (with evidence)
+   - `Gaps / Missing Work`
+   - `Recommended Fixes`
+5. If gaps exist, do not proceed automatically. Present the gaps to the developer and ask whether to:
+   - patch now,
+   - update the TRD to reflect intentional scope changes,
+   - or accept specific deviations explicitly.
+6. Repeat this cross-check until either:
+   - all required TRD items are covered, or
+   - the developer explicitly signs off on known deviations.
+
+**Gate:** Tell the developer: "Implementation cross-check is complete. Report is at `.agents/spec/IMPLEMENTATION-CROSS-CHECK.md`. Do you want to proceed to test coverage (Stage 7), or address gaps first?"
+
+**If skipped now:** Record that Stage 6 was deferred and remind the developer they can open a fresh session and request: "Start at Stage 6 implementation cross-check" to run this phase immediately.
+
+---
+
+## Stage 7: Test Coverage
 
 **Recommended model:** Haiku or Sonnet for analysis and implementation; Opus for the test TRD step.
 
@@ -217,7 +250,7 @@ Do not execute the test orchestration until the developer approves.
 
 ---
 
-## Stage 7: PR Description
+## Stage 8: PR Description
 
 **Recommended model:** Haiku or Sonnet — this is a summarization task.
 
@@ -243,15 +276,44 @@ At each stage transition, briefly mention the recommended model and why. These a
 
 | Stage | Recommended | Why |
 |---|---|---|
-| 1 — Outline | Haiku or Sonnet | Brainstorming and template-filling; depth not required |
-| 2 — PRD | Opus | Architectural trade-offs, scope decisions, nuanced product requirements |
-| 3 — TRD | Opus | Work unit decomposition and dependency design; mistakes here cascade |
-| 4 — Orchestration | Opus | Precision matters; gaps in agent prompts cause failures at execution time |
-| 5 — Execution | Haiku or Sonnet | Each work unit is a focused, bounded task |
-| 6 — Tests | Haiku/Sonnet + Opus (TRD step) | Analysis and implementation are routine; test TRD benefits from Opus |
-| 7 — PR | Haiku or Sonnet | Summarization; model capability not the bottleneck |
+| 1 — Outline | sonnet 4.6 (haiku latest if lightweight) | Balanced interview quality/speed |
+| 2 — PRD | opus 4.6 (or gpt 5.4) | High-stakes scope and product trade-offs |
+| 3 — TRD | opus 4.6 (or gpt 5.4) | Decomposition and dependency precision |
+| 4 — Orchestration | gpt 5.4 (or opus 4.6) | Prompt completeness/instruction fidelity |
+| 5 — Execution | codex 5.3 (or sonnet 4.6) | Efficient code-level work per unit |
+| 6 — Cross-Check | gpt 5.4 (or opus 4.6) | Maximum gap detection and traceability |
+| 7 — Tests | sonnet 4.6 (codex 5.3 for heavy test writing) | Good balance for analysis + implementation |
+| 8 — PR | haiku latest (or sonnet 4.6) | Fast summarization; escalate only if complex |
 
 To switch models in OpenCode: use the model picker in the interface, or start a new session with the target model active.
+
+---
+
+## Mandatory Model Gate (Do Not Skip)
+
+At the start of **every stage**, the orchestrator must run this check before doing stage work:
+
+1. Identify the currently active model.
+2. Compare it with the stage recommendation table above.
+3. If model is recommended: proceed normally.
+4. If model is not recommended:
+   - Warn clearly.
+   - Explain expected trade-off in one sentence (quality/risk/speed/cost).
+   - Ask for explicit confirmation before proceeding.
+   - Do not continue stage execution until confirmation is received.
+
+Use this exact prompt format on mismatch:
+
+`Model mismatch for Stage X: recommended <model(s)>, current <model>. I recommend switching to <model>. Reply with: (1) Switch model now, or (2) Proceed anyway on current model.`
+
+If the developer selects **(1) Switch model now**:
+- Pause stage work.
+- Instruct them to switch via model picker or new session.
+- Resume from the same stage once they confirm the switch.
+
+If the developer selects **(2) Proceed anyway**:
+- Continue the stage on current model.
+- Record this as an intentional deviation in stage output notes (and `memory.md` if present).
 
 ---
 
@@ -261,8 +323,8 @@ Use sub-agents liberally to keep the orchestrating session's context window clea
 
 Sub-agents are especially important for:
 - **Document generation** (PRD, TRD, orchestration plan) — they read many reference files and produce large outputs
-- **Execution** (Stages 5 and 6) — each work unit is independent and benefits from an isolated context
-- **Branch analysis** (Stages 6 and 7) — diffs can be large and will otherwise pollute the conversation
+- **Execution** (Stage 5) — each work unit is independent and benefits from an isolated context
+- **Cross-check and branch analysis** (Stages 6, 7, and 8) — verification and diff analysis can be large and will otherwise pollute the conversation
 
 A bloated orchestrating session loses track of the overall workflow. When in doubt, spawn a sub-agent.
 
@@ -273,5 +335,6 @@ A bloated orchestrating session loses track of the overall workflow. When in dou
 - All planning artifacts go in `.agents/spec/` at the project root. Create the directory if it doesn't exist.
 - Orchestration files go as siblings to the TRD they were generated from (so both live in `.agents/spec/`).
 - A memory file is always created alongside its orchestration plan.
+- Cross-check findings should be written to `.agents/spec/IMPLEMENTATION-CROSS-CHECK.md`.
 - Never execute an orchestration plan without the developer's explicit approval.
 - Treat a "final" document as immutable — create a new versioned file rather than overwriting if the developer wants to revise after approval.
