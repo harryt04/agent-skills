@@ -16,12 +16,13 @@ Read all three before you begin writing.
 
 ## What You Are Building
 
-Two files:
+Three artifacts:
 
 1. **`.agents/spec/ORCHESTRATION.md`** — a layered execution plan where each work unit is a fully self-contained agent prompt.
-2. **`.agents/spec/memory.md`** — a shared state file that sub-agents read at the start of their task and update upon completion.
+2. **`.agents/spec/memory.md`** — an orchestrator-owned state file that sub-agents read for context.
+3. **`.agents/spec/updates/`** — a directory where each sub-agent writes a per-work-unit update file for the orchestrator to consolidate.
 
-Both go in `.agents/spec/`, as siblings to the TRD.
+All of them live in `.agents/spec/`, as siblings to the TRD.
 
 ---
 
@@ -44,7 +45,7 @@ Each work unit's `### Prompt` section is the most important part of the plan. Su
 - Any relevant codebase patterns, naming conventions, or architectural constraints
 - Dependencies to install (if any)
 - Tests to write and where they go
-- An instruction to read and update `.agents/spec/memory.md` at the start and end of their task
+- An instruction to read `.agents/spec/memory.md` at the start of the task and write results to `.agents/spec/updates/<work-unit-id>.md`
 
 If a sub-agent would need to "figure out" something that could be answered now, answer it in the prompt. Ambiguity in a prompt leads to inconsistent or incorrect output.
 
@@ -64,7 +65,8 @@ Follow the memory template for structure. Adapt every section to the actual proj
 - **Key files to be modified** — for each file that will be modified (not created new), describe its current shape and the exact changes needed, so agents don't misunderstand the scope
 - **Open questions** — any unresolved design decisions from the TRD, with an assumed default for each so agents aren't blocked
 - **Coordination notes** — file conflict risks between parallel work units, ordering constraints (which unit must run last), and project-wide style rules
-- **Agent completion log** — an empty table that agents fill in as they finish
+- **Agent completion log** — an empty table that the orchestrator fills in as it consolidates sub-agent updates
+- **Update directory** — the exact path sub-agents should write their per-work-unit reports to
 
 ---
 
@@ -76,4 +78,5 @@ Before finishing, verify:
 - [ ] Dependencies between work units are explicit and accurate
 - [ ] The execution phases table matches the actual work units and layers
 - [ ] The memory file has no placeholder content — every section is filled in for this specific project
-- [ ] Both files are written to `.agents/spec/`
+- [ ] Shared status files are clearly orchestrator-owned; sub-agents only write per-work-unit update files
+- [ ] The orchestration and memory files are written to `.agents/spec/`, and the update directory is documented

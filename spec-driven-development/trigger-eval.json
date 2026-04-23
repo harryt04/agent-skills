@@ -1,82 +1,66 @@
 [
   {
-    "query": "I have this cool idea for a SaaS product that helps teams track their engineering velocity. Where do I start?",
+    "query": "I need help planning a feature that touches three repos: a Rails API, a React web app, and an iOS client. We have a rough product brief in Notion but no formal PRD yet, and I want a durable plan we can execute in parallel.",
     "should_trigger": true
   },
   {
-    "query": "write me a PRD for a document collaboration tool",
+    "query": "Can you turn this approved PRD into a TRD and break it into parallel work units? The PRD is already at .agents/spec/PRD.md and this will involve backend, web, and infra changes.",
     "should_trigger": true
   },
   {
-    "query": "I need to generate a TRD from this PRD I've got. The PRD is at .agents/spec/PRD.md in my project root",
+    "query": "I already have a TRD for a cross-repo feature flag rollout. I need an orchestration plan with self-contained prompts for subagents and a safe way to track progress across the branch.",
     "should_trigger": true
   },
   {
-    "query": "create an orchestration plan for implementing this feature",
+    "query": "Please do a branch-wide audit against the TRD before we merge. The feature spans two services plus the frontend, and I want to know what's still missing versus the spec.",
     "should_trigger": true
   },
   {
-    "query": "help me write test coverage for the auth module. I just pushed changes to fix JWT token expiry",
+    "query": "We finished implementation on a tall thin slice across web, API, and worker repos. I want you to analyze the branch diff, plan any missing test coverage, and only add the heavier planning docs if the test work is substantial.",
     "should_trigger": true
   },
   {
-    "query": "I want a PR description for my feature branch. It's got about 3 new components and updates to the API layer",
+    "query": "I have a half-finished spec flow already: .agents/spec/TRD.md exists, but we never generated orchestration. Pick up from there and build the execution plan instead of restarting from scratch.",
     "should_trigger": true
   },
   {
-    "query": "spec out a new feature for my project. I'm building a real-time chat app and I want users to be able to pin messages and search within conversations",
+    "query": "I'm leading a risky migration from a monolith endpoint to a new service boundary. I need a written plan, technical breakdown, and staged execution because several teams will touch different repos.",
     "should_trigger": true
   },
   {
-    "query": "orchestrate this project so I can execute it in parallel with sub-agents",
+    "query": "Write the final PR description for this branch, but first verify the branch is actually complete against the existing spec and test plan. If it's not complete, stop and tell me what is still open.",
     "should_trigger": true
   },
   {
-    "query": "I've got a TRD but I'm not sure about the database schema. Can you help me think through whether I should use PostgreSQL or MongoDB?",
-    "should_trigger": true
-  },
-  {
-    "query": "help me plan out a feature. I think users should be able to export data in CSV, JSON, and XML formats",
-    "should_trigger": true
-  },
-  {
-    "query": "write a simple Python script that reads a CSV file and prints each row",
+    "query": "Help me add unit tests for src/hooks/useDebouncedValue.ts. I only changed one hook and I don't need a big plan.",
     "should_trigger": false
   },
   {
-    "query": "debug this JavaScript error: TypeError: Cannot read property 'name' of undefined",
+    "query": "Can you think through whether this new export flow belongs in the API layer or in a background job? I want architecture advice, not a PRD or workflow docs.",
     "should_trigger": false
   },
   {
-    "query": "I need to write unit tests for my React component. How do I use React Testing Library?",
+    "query": "Plan this small ticket: add a loading spinner to the billing page and maybe tighten up the copy while you're there.",
     "should_trigger": false
   },
   {
-    "query": "explain the difference between REST and GraphQL APIs",
+    "query": "I need a PR description for a tiny bugfix branch that changes two files. No more code changes are needed.",
     "should_trigger": false
   },
   {
-    "query": "I'm getting a git merge conflict in my package.json file. How do I resolve it?",
+    "query": "I have a PRD already, but right now I just want help deciding between Postgres enums and a lookup table. Don't generate docs yet.",
     "should_trigger": false
   },
   {
-    "query": "write documentation for my API endpoints. I've got 12 routes that handle CRUD operations on a User resource",
+    "query": "Can you review this branch and tell me what looks risky? There isn't a spec; I just want a normal code review.",
     "should_trigger": false
   },
   {
-    "query": "generate some sample test data for my database — I need about 100 fake user records",
+    "query": "Write tests for the auth middleware changes on this branch. It's one file plus one existing spec file, so let's just do the work.",
     "should_trigger": false
   },
   {
-    "query": "I'm refactoring my code. Can you help me extract this function into a separate file?",
-    "should_trigger": false
-  },
-  {
-    "query": "my feature is done and it passed code review. I just need to write a commit message that summarizes the changes",
-    "should_trigger": false
-  },
-  {
-    "query": "I want to start tracking project progress and deliverables. Should I use Linear, Jira, or Trello?",
+    "query": "I want to flesh out an idea for a startup, but only at a brainstorming level. I'm nowhere near writing PRDs or technical plans yet.",
     "should_trigger": false
   }
 ]

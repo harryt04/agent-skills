@@ -1,20 +1,32 @@
 ---
 name: spec-driven-development
 description: >
-  Guides feature planning and implementation through a document-driven workflow. Stages: App Outline → PRD → TRD → Orchestration → Execution → Implementation Cross-Check → Tests → PR Description.
-  Use this skill to: write or refine a PRD (product requirements), build a cross-repo feature plan through interactive Q&A,
-  write or refine a TRD (technical requirements), create an orchestration plan to execute work in parallel,
-  generate test coverage for a branch, write a PR description, plan a new feature or project idea, spec out a product,
-  outline an application, generate tests. Trigger on any developer request that mentions PRD, TRD, specification,
-  product requirements, technical requirements, orchestration, test coverage, branch changes, PR description, feature planning,
-  cross-repo feature, multi-repo changes, building a plan, tall-thin slice, feature that spans repositories,
-  or if someone describes an idea and wants help fleshing it out. Also trigger when a user wants to plan a feature across
-  multiple repositories but doesn't have a written PRD — the plan-driven PRD path handles this. Works at any stage independently.
+  Guides heavyweight software work through a document-driven workflow. Use this skill for cross-repo or high-risk feature planning,
+  formal PRD/TRD generation, orchestration plans for parallel sub-agents, branch-wide implementation audits, substantial test-planning,
+  and final PR descriptions once a branch is complete. Trigger when the work is multi-stage, spans repositories or systems,
+  needs durable planning artifacts, or must be checked for completeness against a spec. Do not trigger for small tickets,
+  isolated bug fixes, one-off test help, casual architecture advice, or simple PR/commit writing.
 ---
 
 # Spec-Driven Development
 
-This skill guides you through a structured, document-driven workflow for building software. Each stage produces a planning document that you review and refine before moving on. This keeps context windows clean, models focused, and humans in control.
+This skill guides heavyweight software work through a structured, document-driven workflow. Use it when the work is large enough that durable artifacts, staged execution, and explicit audits reduce risk. Do not force this process onto small or local asks.
+
+## Activation Router
+
+Before starting Stage 1, classify the request into one of three paths:
+
+1. **No-skill path:** The ask is small, local, or already concrete enough to execute directly. Examples: a small ticket, one test file, a lightweight refactor, a basic architecture question, a simple PR description. Do not use this skill.
+2. **Partial-flow path:** The ask is medium-sized or the developer already has artifacts. Start at the first missing heavyweight stage, usually TRD, orchestration, audit, or PR description.
+3. **Full-flow path:** The ask is cross-repo, high-risk, ambiguous, or needs formal planning and staged execution. Run the full pipeline.
+
+Default routing:
+
+- Single-repo and under roughly 3 meaningful work units: usually no-skill path
+- Single-repo but high-risk, ambiguous, or requiring durable planning: partial-flow path
+- Cross-repo, tall-thin-slice, branch-wide audit, or formal spec work: full-flow path
+
+If uncertain, ask one short routing question instead of starting the full pipeline by default.
 
 ## The Pipeline
 
@@ -26,12 +38,13 @@ Stage 4: Orchestration Plan               (gpt 5.4 default; opus 4.6 alternative
 Stage 5: Execute the Orchestration Plan   (codex 5.3 default per WU; sonnet 4.6 alternative)
 Stage 6: Implementation Cross-Check       (gpt 5.4 default; opus 4.6 alternative)
 Stage 7: Test Coverage                    (sonnet 4.6 default; codex 5.3 for test writing)
-Stage 8: PR Description                   (haiku latest default; sonnet 4.6 alternative)
+Stage 8: Implementation Cross-Check After Tests (gpt 5.4 default; opus 4.6 alternative)
+Stage 9: PR Description                   (haiku latest default; sonnet 4.6 alternative)
 ```
 
-You can enter at any stage. If you already have a TRD, start at Stage 4. If execution is already done, jump straight to Stage 6 for implementation cross-check. If you just want a PR description, jump straight to Stage 8.
+You can enter at any stage. If you already have a TRD, start at Stage 4. If execution is already done, jump straight to Stage 6 for implementation cross-check. If tests are already implemented and you need a final audit before write-up, jump to Stage 8. If you just want a PR description and the branch is truly final with no more code changes needed, jump straight to Stage 9.
 
-All generated documents go in `.agents/spec/` in the project root.
+All generated documents go in `.agents/spec/` in the project root. For work-item-specific plans, use `.agents/spec/<work-item-id>/` rather than a separate top-level directory.
 
 ---
 
@@ -40,10 +53,19 @@ All generated documents go in `.agents/spec/` in the project root.
 First, figure out where the developer is:
 
 1. Check `.agents/spec/` for existing documents (app-outline.md, PRD.md, TRD.md, ORCHESTRATION.md, memory.md).
-2. If none exist, ask what they want to do — or jump straight to Stage 1 if they've already described an idea.
-3. If documents exist, identify the latest complete stage and offer to continue from there.
+2. Route the request using the Activation Router above.
+3. If no artifacts exist and the work is heavyweight, ask what they want to do — or jump straight to Stage 1 if they've already described the problem.
+4. If artifacts exist, identify the latest complete stage and continue from there instead of regenerating earlier documents.
 
-If the intent is unclear, ask: "Where would you like to start? I can help you outline an idea, write a PRD, generate a TRD, build an orchestration plan, add test coverage, or write a PR description."
+If the intent is unclear, ask: "Where would you like to start? I can help you outline an idea, write a PRD, generate a TRD, build an orchestration plan, run an implementation cross-check, add test coverage, or write a PR description once the branch is final."
+
+## Global Rules
+
+- Shared planning files are **orchestrator-owned**. Sub-agents may read `memory.md` and `ORCHESTRATION.md`, but they should not update shared status files directly.
+- If sub-agents need to report progress or results, have them write a per-work-unit report under `.agents/spec/updates/` (or `.agents/spec/updates-tests/` for test work). The orchestrator consolidates those reports into shared artifacts.
+- Cross-check loops are not open-ended. Run at most 2 passes before surfacing unresolved ambiguity to the developer.
+- If a stage reveals intentional scope deviation, record it explicitly in the stage output and carry it forward rather than repeatedly re-flagging it.
+- Prefer entering at the latest viable stage. Do not generate PRD/TRD/orchestration artifacts just because the skill triggered.
 
 ---
 
@@ -62,8 +84,8 @@ All templates and prompt instructions are in the `references/` directory alongsi
 | `references/memory-template.md` | Stage 4 (companion memory file) |
 | `references/orchestration-instructions.md` | Stage 4 (how to build the plan) |
 | `references/test-coverage-instructions.md` | Stage 7 |
-| `references/pull-request-instructions.md` | Stage 8 |
-| `references/ado-wiki-markdown-reference.md` | Stage 8 (optional markdown formatting reference) |
+| `references/pull-request-instructions.md` | Stage 9 |
+| `references/ado-wiki-markdown-reference.md` | Stage 9 (optional markdown formatting reference) |
 
 ---
 
@@ -106,7 +128,7 @@ The plan-driven path is especially useful for tall-thin slice features that cut 
 3. Use a sub-agent to generate the PRD — this keeps the orchestrating session's context window clean. The sub-agent prompt: read the outline, read the PRD template, write a complete PRD to `.agents/spec/PRD.md`.
 4. The PRD should cover all template sections: Problem Statement, Product Overview, Target Users, MVP Feature Requirements, System Architecture, Data Model, Non-Functional Requirements, Pricing, Third-Party Integrations, Out of Scope, Testing & Operations, Success Criteria, and Appendix.
 
-5. **Cross-check loop (written PRD path):** Before surfacing the PRD to the developer, spawn a cross-check sub-agent whose sole job is to compare the source outline against the generated PRD and identify anything that was dropped, misrepresented, or underdeveloped. The sub-agent should: read `.agents/spec/app-outline.md` (or the equivalent input), read `.agents/spec/PRD.md`, list every gap or omission, and either patch the PRD directly or produce a clear list of required additions. Repeat until the cross-check sub-agent reports no remaining gaps. Only then surface the document to the developer. Do not tell the developer the PRD is ready until this cross-check has passed.
+5. **Cross-check loop (written PRD path):** Before surfacing the PRD to the developer, spawn a cross-check sub-agent whose sole job is to compare the source outline against the generated PRD and identify anything that was dropped, misrepresented, or underdeveloped. The sub-agent should: read `.agents/spec/app-outline.md` (or the equivalent input), read `.agents/spec/PRD.md`, list every gap or omission, and either patch the PRD directly or produce a clear list of required additions. Run no more than 2 passes before surfacing unresolved ambiguity to the developer. Only then surface the document to the developer. Do not tell the developer the PRD is ready until this cross-check has passed.
 
 **Gate:** Tell the developer: "Your draft PRD is at `.agents/spec/PRD.md`. Please review and refine it until it meets all your product requirements. Let me know when it's final and I'll generate the TRD."
 
@@ -114,9 +136,9 @@ The plan-driven path is especially useful for tall-thin slice features that cut 
 
 1. Read `references/plan-interview-guide.md` and `references/plan-template.md`.
 2. Follow the interview guide's phased approach: understand the feature, research the repositories (using sub-agents to explore each repo in parallel), ask targeted questions, then draft the plan.
-3. Save to `.agents/specs/{work-item-id}/plan.md` if a work item ID is known, otherwise `.agents/spec/plan.md`.
+3. Save to `.agents/spec/{work-item-id}/plan.md` if a work item ID is known, otherwise `.agents/spec/plan.md`.
 4. Never include effort estimates (day counts, story points, t-shirt sizes) in the plan.
-5. **Cross-check loop (plan-driven path):** Before surfacing the plan to the developer, spawn a cross-check sub-agent that compares every detail gathered during the interview against the generated plan — look for features, constraints, integration points, or decisions that were discussed but not reflected in the output. Patch any gaps. Repeat until the sub-agent reports nothing missing. Do not tell the developer the plan is ready until this passes.
+5. **Cross-check loop (plan-driven path):** Before surfacing the plan to the developer, spawn a cross-check sub-agent that compares every detail gathered during the interview against the generated plan — look for features, constraints, integration points, or decisions that were discussed but not reflected in the output. Patch any gaps. Run no more than 2 passes before surfacing unresolved ambiguity to the developer. Do not tell the developer the plan is ready until this passes.
 
 **Gate:** Tell the developer: "Your draft plan is at [path]. Please review — once you're satisfied, this will serve as the basis for the TRD. Let me know when it's final."
 
@@ -135,12 +157,12 @@ Do not proceed to Stage 3 until the developer explicitly confirms the PRD or pla
 **Steps:**
 
 1. Read `references/trd-template.md`.
-2. Read the source document — either `.agents/spec/PRD.md` or `.agents/specs/{id}/plan.md` (whichever was produced in Stage 2). Both contain sufficient detail to generate a TRD.
+2. Read the source document — either `.agents/spec/PRD.md` or `.agents/spec/{id}/plan.md` (whichever was produced in Stage 2). Both contain sufficient detail to generate a TRD.
 3. Use a sub-agent to generate the TRD. The sub-agent should: read the PRD, read the TRD template, analyze the codebase structure if relevant (to understand existing patterns, file layout, and tech stack), then write a complete TRD to `.agents/spec/TRD.md`.
 4. The TRD must include: Technology Decisions, Project Structure, Database Schema, Work Units (organized by dependency layer), Dependency Graph, Environment Variables, Testing Strategy, and Migration Notes.
 5. Work units are the heart of the TRD. Each one must be self-contained: files to create/modify, acceptance criteria, test requirements, and an explicit list of which other work units it depends on. Units in the same layer should be fully independent of each other so they can run in parallel.
 6. **Always generate a companion human-readable summary at `.agents/spec/TRD-summary.md`.** This is a separate, concise document intended for teammates who understand the codebase and just need to understand the proposed changes. Keep it as short as possible. It should cover: what is being built (1–2 sentences), new components (table: component, location, purpose), modified components (table: component, change), data model changes, request/data flow (numbered steps), reused scaffolding, config changes, and error handling. Omit work unit decomposition, layer structure, acceptance criteria, and test scaffolding — those details belong only in `TRD.md`.
-7. **Cross-check loop:** Before surfacing the TRD to the developer, spawn a cross-check sub-agent whose sole job is to compare the source PRD (or plan) against `TRD.md` and `TRD-summary.md` and identify anything dropped, misrepresented, or underspecified — including requirements, constraints, data model details, integration points, and non-functional requirements. The sub-agent should patch the TRD directly for any gaps found. Repeat until the sub-agent reports no remaining gaps. Do not tell the developer the TRD is ready until this cross-check has passed.
+7. **Cross-check loop:** Before surfacing the TRD to the developer, spawn a cross-check sub-agent whose sole job is to compare the source PRD (or plan) against `TRD.md` and `TRD-summary.md` and identify anything dropped, misrepresented, or underspecified — including requirements, constraints, data model details, integration points, and non-functional requirements. The sub-agent should patch the TRD directly for any gaps found. Run no more than 2 passes before surfacing unresolved ambiguity to the developer. Do not tell the developer the TRD is ready until this cross-check has passed.
 
 **Gate:** Tell the developer: "Your draft TRD is at `.agents/spec/TRD.md` and a human-readable summary is at `.agents/spec/TRD-summary.md`. Please review and refine until you're satisfied. Let me know when it's final and I'll generate the orchestration plan."
 
@@ -164,8 +186,8 @@ Do not proceed to Stage 4 until the developer explicitly confirms the TRD is fin
    - Write the orchestration plan to `.agents/spec/ORCHESTRATION.md`, following the template format.
    - Write the memory file to `.agents/spec/memory.md`, using `references/memory-template.md` as the structural guide and adapting it to the actual project.
 4. The orchestration plan must include: header metadata, prerequisites checklist, execution phases table, and fully self-contained work unit prompts. Each work unit's `### Prompt` section must be complete enough to pass directly to `task(description, prompt)` without needing additional context from the conversation.
-5. The memory file must document: project root path, implementation status by phase (tracking each file's status), codebase patterns, key files to be modified, open questions with assumed defaults, and coordination notes for race condition prevention.
-6. **Cross-check loop:** Before surfacing either file to the developer, spawn a cross-check sub-agent that reads `TRD.md`, `ORCHESTRATION.md`, and `memory.md` together and verifies: every work unit in the TRD has a corresponding, fully-specified prompt in the orchestration plan; the dependency layers are faithfully preserved; no TRD acceptance criteria were dropped; the memory file accurately reflects all files to be modified and all open questions surfaced in the TRD. Patch any gaps found. Repeat until the sub-agent reports nothing missing. Do not tell the developer the orchestration plan is ready until this cross-check has passed.
+5. The memory file must document: project root path, implementation status by phase (tracking each file's status), codebase patterns, key files to be modified, open questions with assumed defaults, coordination notes for race condition prevention, and the per-work-unit update location that sub-agents should write to.
+6. **Cross-check loop:** Before surfacing either file to the developer, spawn a cross-check sub-agent that reads `TRD.md`, `ORCHESTRATION.md`, and `memory.md` together and verifies: every work unit in the TRD has a corresponding, fully-specified prompt in the orchestration plan; the dependency layers are faithfully preserved; no TRD acceptance criteria were dropped; the memory file accurately reflects all files to be modified and all open questions surfaced in the TRD. Patch any gaps found. Run no more than 2 passes before escalating unresolved ambiguity to the developer. Do not tell the developer the orchestration plan is ready until this cross-check has passed.
 
 **Gate:** Tell the developer: "Your orchestration plan and memory file are at `.agents/spec/ORCHESTRATION.md` and `.agents/spec/memory.md`. Please review both — once execution starts, agents will make real changes to your codebase. Let me know when you're ready to proceed."
 
@@ -184,10 +206,11 @@ Do not begin execution until the developer explicitly approves.
 1. Read `.agents/spec/ORCHESTRATION.md` and `.agents/spec/memory.md`.
 2. Check the prerequisites checklist at the top of the orchestration plan. If anything is missing, halt and ask the developer to address it first.
 3. Execute layer by layer:
-   - For each layer, spawn parallel `task()` calls — one per work unit in that layer. Pass each work unit's full `### Prompt` section as the task prompt. Each sub-agent should also be told to read and update `.agents/spec/memory.md` at the start and end of their task.
+   - For each layer, spawn parallel `task()` calls — one per work unit in that layer. Pass each work unit's full `### Prompt` section as the task prompt.
+   - Each sub-agent should read `.agents/spec/memory.md` for context, then write its outcome to `.agents/spec/updates/<work-unit-id>.md` instead of editing shared planning files directly.
    - Wait for all work units in the layer to complete before spawning the next layer.
-   - Update the status checkboxes in `ORCHESTRATION.md` as units complete or fail.
-4. If a work unit fails, surface the error to the developer immediately. Do not continue to the next layer until they decide to retry, modify, or skip.
+   - The orchestrator is the only writer for `ORCHESTRATION.md` and `memory.md`. After each layer, consolidate sub-agent updates into those files and update status checkboxes.
+4. If a work unit fails, save the failure details in its per-work-unit update file, surface the error to the developer immediately, and do not continue to the next layer until they decide to retry, modify, or skip.
 
 **After execution:** Summarize what was done, note any failures or skipped units, then ask: "Execution is complete. Do you want to run the Implementation Cross-Check now to verify TRD completeness before tests?" If they say no, explicitly tell them they can start a fresh session later and jump directly to Stage 6.
 
@@ -197,27 +220,30 @@ Do not begin execution until the developer explicitly approves.
 
 **Recommended model:** Sonnet or Opus — this stage requires careful requirement-by-requirement verification and gap detection.
 
-**Goal:** Verify that implementation is complete and aligned with the finalized TRD at 100%, with nothing missed before test planning and PR write-up.
+**Goal:** Verify that implementation is complete and aligned with the finalized TRD at 100%, with nothing missed before test planning.
 
 **Steps:**
 
 1. Read `.agents/spec/TRD.md`, `.agents/spec/TRD-summary.md` (if present), `.agents/spec/ORCHESTRATION.md`, and `.agents/spec/memory.md`.
 2. Inspect the current branch changes and resulting code state.
-3. Spawn one or more cross-check sub-agents (if needed) to independently validate completeness:
-   - Map every TRD requirement, work unit, and acceptance criterion to concrete implementation evidence (files, functions, tests, config, migrations, or docs).
-   - Flag anything partially implemented, missing, or inconsistent with the TRD.
-   - Identify anything marked done in orchestration/memory that does not actually appear in code.
-4. Consolidate findings into `.agents/spec/IMPLEMENTATION-CROSS-CHECK.md` with three sections:
-   - `Fully Satisfied` (with evidence)
-   - `Gaps / Missing Work`
-   - `Recommended Fixes`
-5. If gaps exist, do not proceed automatically. Present the gaps to the developer and ask whether to:
-   - patch now,
-   - update the TRD to reflect intentional scope changes,
-   - or accept specific deviations explicitly.
-6. Repeat this cross-check until either:
-   - all required TRD items are covered, or
-   - the developer explicitly signs off on known deviations.
+3. By default, spawn parallel read-only audit sub-agents to independently validate completeness. Use more than one audit agent unless the branch is so small that parallelization adds no value. Keep the audits intentionally overlapping enough to catch omissions from different angles.
+4. Give the audit agents distinct primary lenses such as:
+   - TRD traceability: map every requirement, work unit, and acceptance criterion to concrete implementation evidence (files, functions, tests, config, migrations, or docs).
+   - Execution truth check: identify anything marked done in orchestration or memory that does not actually appear in code or configuration.
+   - Gap detection: flag anything partially implemented, missing, inconsistent with the TRD, or implemented in a way that appears to violate stated constraints.
+5. Audit agents are read-only. They inspect code, diffs, planning artifacts, and tests, but they do not patch files or make branch changes themselves.
+6. Consolidate findings into `.agents/spec/IMPLEMENTATION-CROSS-CHECK.md` with three sections:
+    - `Fully Satisfied` (with evidence)
+    - `Gaps / Missing Work`
+    - `Recommended Fixes`
+7. If gaps exist, do not proceed automatically. Present the gaps to the developer and ask whether to:
+    - patch now,
+    - update the TRD to reflect intentional scope changes,
+    - or accept specific deviations explicitly.
+8. Repeat this cross-check until either:
+    - all required TRD items are covered, or
+    - the developer explicitly signs off on known deviations.
+   Stop after 2 cross-check passes without meaningful new findings and escalate the remaining ambiguity to the developer.
 
 **Gate:** Tell the developer: "Implementation cross-check is complete. Report is at `.agents/spec/IMPLEMENTATION-CROSS-CHECK.md`. Do you want to proceed to test coverage (Stage 7), or address gaps first?"
 
@@ -229,40 +255,82 @@ Do not begin execution until the developer explicitly approves.
 
 **Recommended model:** Haiku or Sonnet for analysis and implementation; Opus for the test TRD step.
 
-**Goal:** Analyze branch changes, plan coverage gaps, generate a test TRD and orchestration plan, then implement the tests.
+**Goal:** Analyze branch changes and add the right amount of test planning. For small or localized diffs, go straight to direct test work. For large, risky, or cross-cutting diffs, generate a test TRD and orchestration plan so the branch can undergo a final post-test implementation audit.
 
 **Steps:**
 
 1. Read `references/test-coverage-instructions.md`.
 2. Ask the developer: "Do you have any existing test guidelines, context files, or test style examples I should reference? If so, share the file paths."
-3. Use sub-agents to:
+3. Choose the test path:
+   - **Direct test path:** small or localized branch changes with obvious test destinations. Summarize the needed coverage in `.agents/spec/test-analysis.md`, get approval, then write tests without generating `TRD-tests.md` or `ORCHESTRATION-tests.md`.
+   - **Planned test path:** large, risky, or cross-cutting changes. Generate `TRD-tests.md`, `ORCHESTRATION-tests.md`, and `memory-tests.md`.
+4. Use sub-agents to:
    - Analyze the changes on the current branch relative to master/main.
    - Produce a markdown summary of needed test cases per file/function, saved to `.agents/spec/test-analysis.md`.
    - Search for related existing tests to understand where new tests should go and what conventions to follow.
-4. Use a sub-agent (Opus recommended) to generate a test-focused TRD at `.agents/spec/TRD-tests.md`, based on the test analysis and any context files provided.
-5. Generate a test orchestration plan at `.agents/spec/ORCHESTRATION-tests.md` and a companion memory file at `.agents/spec/memory-tests.md`.
+5. For the planned test path, use a sub-agent (Opus recommended) to generate a test-focused TRD at `.agents/spec/TRD-tests.md`, based on the test analysis and any context files provided.
+6. For the planned test path, generate a test orchestration plan at `.agents/spec/ORCHESTRATION-tests.md` and a companion memory file at `.agents/spec/memory-tests.md`.
+7. Make sure the test artifacts preserve enough traceability for a later read-only audit. The test TRD, orchestration plan, and memory file should make it easy to map each planned test back to the implementation behaviors and gaps it is meant to cover.
 
-**Gate:** Tell the developer: "Your test plan is ready. TRD at `.agents/spec/TRD-tests.md`, orchestration plan at `.agents/spec/ORCHESTRATION-tests.md`. Please review before I begin — tests will be written to your codebase. Let me know when ready."
+**Gate:**
+
+- Direct test path: Tell the developer: "Your test analysis is ready at `.agents/spec/test-analysis.md`. Please review before I begin writing tests."
+- Planned test path: Tell the developer: "Your test plan is ready. TRD at `.agents/spec/TRD-tests.md`, orchestration plan at `.agents/spec/ORCHESTRATION-tests.md`. Please review before I begin — tests will be written to your codebase. Let me know when ready."
 
 Do not execute the test orchestration until the developer approves.
 
-6. Execute the test orchestration plan using the same layer-by-layer parallel approach as Stage 5.
+8. For the planned test path, execute the test orchestration plan using the same layer-by-layer parallel approach as Stage 5, with the orchestrator as the only writer of shared planning files.
+9. After test execution, do not jump straight to PR description. Tell the developer the default next step is Stage 8, a final implementation cross-check by read-only audit sub-agents to verify the branch is truly done before PR write-up.
 
 ---
 
-## Stage 8: PR Description
+## Stage 8: Implementation Cross-Check After Tests
+
+**Recommended model:** Sonnet or Opus — this stage is a final audit of the full branch state, including the tests that were just added.
+
+**Goal:** Verify that the final branch state is complete after test implementation, with implementation, tests, and planning artifacts all aligned before PR write-up.
+
+**Steps:**
+
+1. Read `.agents/spec/TRD.md`, `.agents/spec/TRD-summary.md` (if present), `.agents/spec/ORCHESTRATION.md`, `.agents/spec/memory.md`, `.agents/spec/test-analysis.md`, `.agents/spec/TRD-tests.md`, `.agents/spec/ORCHESTRATION-tests.md`, and `.agents/spec/memory-tests.md` when present.
+2. Inspect the current branch changes and resulting code-and-test state.
+3. By default, spawn parallel read-only audit sub-agents. Use multiple audit agents unless the branch is small enough that a single pass is clearly sufficient.
+4. Give the audit agents distinct primary lenses such as:
+   - Final TRD completeness: verify the implementation still satisfies the finalized TRD and any explicitly accepted deviations are the only remaining gaps.
+   - Test completeness: verify implemented tests cover the behaviors and risks identified in `test-analysis.md` and `TRD-tests.md`, and that claimed coverage actually exists in the repository.
+   - Planning artifact truth check: verify orchestration and memory files for both implementation and test work reflect the real final branch state.
+5. Audit agents are read-only. They inspect and report, but they do not patch files or modify planning artifacts.
+6. Consolidate findings into `.agents/spec/IMPLEMENTATION-CROSS-CHECK-AFTER-TESTS.md` with three sections:
+   - `Fully Satisfied` (with evidence)
+   - `Gaps / Missing Work`
+   - `Recommended Fixes`
+7. If gaps exist, do not start PR description work. Present the gaps to the developer and ask whether to:
+   - patch now,
+   - update the TRD or test-planning artifacts to reflect intentional scope changes,
+   - or accept specific deviations explicitly.
+8. Repeat this cross-check until either:
+    - the branch is complete with no further changes needed, or
+    - the developer explicitly signs off on known deviations and confirms the branch is otherwise final.
+   Stop after 2 passes without meaningful new findings and escalate the remaining ambiguity to the developer.
+
+**Gate:** Tell the developer: "Post-test implementation cross-check is complete. Report is at `.agents/spec/IMPLEMENTATION-CROSS-CHECK-AFTER-TESTS.md`. If there are no more branch changes to make, the next step is PR description (Stage 9)."
+
+---
+
+## Stage 9: PR Description
 
 **Recommended model:** Haiku or Sonnet — this is a summarization task.
 
-**Goal:** Generate a concise, well-structured PR description from the branch diff.
+**Goal:** Generate a concise, well-structured PR description from the final branch diff once there are no more branch changes to make.
 
 **Steps:**
 
 1. Read `references/pull-request-instructions.md`.
-2. Use a sub-agent to compare the current branch against master/main and summarize the diff.
-3. Optionally read `references/ado-wiki-markdown-reference.md` for markdown syntax guidance — it documents what renders well in browser-based PR text boxes (tables, numbered lists, code blocks all work; some advanced features like Mermaid do not).
-4. Write the PR description to `.agents/spec/pr-description.md`.
-5. Hard limit: 4000 characters. Target: under 1000 characters. Use numbered lists and tables where they aid readability; prefer them over prose and bullet points.
+2. Confirm with the developer that the branch is final and no further code or test changes are expected. If more changes are still likely, stop here and return to the appropriate earlier stage instead of drafting the PR description prematurely.
+3. Use a sub-agent to compare the current branch against master/main and summarize the diff.
+4. Optionally read `references/ado-wiki-markdown-reference.md` for markdown syntax guidance — it documents what renders well in browser-based PR text boxes (tables, numbered lists, code blocks all work; some advanced features like Mermaid do not).
+5. Write the PR description to `.agents/spec/pr-description.md`.
+6. Hard limit: 4000 characters. Target: under 1000 characters. Use numbered lists and tables where they aid readability; prefer them over prose and bullet points.
 
 **Paste reminder:** Tell the developer — when pasting the PR description into their platform's web UI, use **Paste and Match Style** (Cmd+Shift+V on Mac, Ctrl+Shift+V on Windows/Linux) to avoid rich-text formatting artifacts.
 
@@ -283,7 +351,8 @@ At each stage transition, briefly mention the recommended model and why. These a
 | 5 — Execution | codex 5.3 (or sonnet 4.6) | Efficient code-level work per unit |
 | 6 — Cross-Check | gpt 5.4 (or opus 4.6) | Maximum gap detection and traceability |
 | 7 — Tests | sonnet 4.6 (codex 5.3 for heavy test writing) | Good balance for analysis + implementation |
-| 8 — PR | haiku latest (or sonnet 4.6) | Fast summarization; escalate only if complex |
+| 8 — Cross-Check After Tests | gpt 5.4 (or opus 4.6) | Final branch audit before write-up |
+| 9 — PR | haiku latest (or sonnet 4.6) | Fast summarization once the branch is final |
 
 To switch models in OpenCode: use the model picker in the interface, or start a new session with the target model active.
 
@@ -324,17 +393,20 @@ Use sub-agents liberally to keep the orchestrating session's context window clea
 Sub-agents are especially important for:
 - **Document generation** (PRD, TRD, orchestration plan) — they read many reference files and produce large outputs
 - **Execution** (Stage 5) — each work unit is independent and benefits from an isolated context
-- **Cross-check and branch analysis** (Stages 6, 7, and 8) — verification and diff analysis can be large and will otherwise pollute the conversation
+- **Cross-check and branch analysis** (Stages 6, 7, 8, and 9) — verification and diff analysis can be large and will otherwise pollute the conversation
 
-A bloated orchestrating session loses track of the overall workflow. When in doubt, spawn a sub-agent.
+A bloated orchestrating session loses track of the overall workflow. Use sub-agents when they reduce context load or enable safe parallelism, not as a default reflex for small work.
 
 ---
 
 ## Document Conventions
 
 - All planning artifacts go in `.agents/spec/` at the project root. Create the directory if it doesn't exist.
+- Work-item-specific artifacts belong under `.agents/spec/<work-item-id>/`.
 - Orchestration files go as siblings to the TRD they were generated from (so both live in `.agents/spec/`).
 - A memory file is always created alongside its orchestration plan.
-- Cross-check findings should be written to `.agents/spec/IMPLEMENTATION-CROSS-CHECK.md`.
+- Shared status artifacts are orchestrator-owned; sub-agents report via per-work-unit update files.
+- Cross-check findings should be written to `.agents/spec/IMPLEMENTATION-CROSS-CHECK.md` and `.agents/spec/IMPLEMENTATION-CROSS-CHECK-AFTER-TESTS.md`.
 - Never execute an orchestration plan without the developer's explicit approval.
+- Do not begin PR description work until the post-test implementation cross-check is complete and the developer confirms there are no more branch changes to make.
 - Treat a "final" document as immutable — create a new versioned file rather than overwriting if the developer wants to revise after approval.

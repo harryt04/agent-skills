@@ -1,8 +1,9 @@
-# [FEATURE NAME] -- Shared Agent Memory
+# [FEATURE NAME] -- Orchestrator Memory
 
-> **Purpose:** Shared state file for orchestration sub-agents. Each agent MUST read this file at the start of their task and update it upon completion.
+> **Purpose:** Orchestrator-owned state file for orchestration work. Sub-agents read this file for context. The orchestrator is the only writer of this file.
 > **Source TRD:** `[path/to/technical-requirements-document.md]`
 > **Orchestration:** `[path/to/orchestration-plan.md]`
+> **Per-work-unit updates:** `.agents/spec/updates/<work-unit-id>.md`
 
 ---
 
@@ -21,6 +22,7 @@
   dependencies on higher ones. Higher layers depend on lower ones.
   Each phase groups work units (WU) that can run in parallel.
   Status values: NOT STARTED | IN PROGRESS | COMPLETE | BLOCKED
+  Update this table only from orchestrator consolidation, not directly from sub-agents.
 -->
 
 ### Phase 1: [Layer Name] (Layer 0 -- no internal dependencies)
@@ -144,12 +146,12 @@ public record ExampleCommand : IRequest<ExampleResponse>
 - **File conflicts:** [Describe any overlap between work units and why it's safe or how to resolve]
 - **Ordering:** [Which work unit(s) must run last and why]
 - **Style rules:** [List project-wide conventions all agents must follow, e.g., file-scoped namespaces, nullable reference types, etc.]
-- **All agents** should check this memory file first for any notes from previous agents.
+- **All agents** should check this memory file first for context, then write their result to their assigned per-work-unit update file.
 
 ---
 
 ## Agent Completion Log
 
-| Agent | Completed At | Notes |
-|-------|-------------|-------|
-| (none yet) | | |
+| Agent | Completed At | Update File | Notes |
+|-------|-------------|-------------|-------|
+| (none yet) | | | |

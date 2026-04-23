@@ -6,13 +6,13 @@ These instructions are self-contained. An agent following them should be able to
 
 ## Goal
 
-Analyze the changes on the current branch relative to master/main, identify what tests are needed, and produce a test-focused TRD and orchestration plan that sub-agents can execute to implement the tests.
+Analyze the changes on the current branch relative to the default branch, identify what tests are needed, and choose the lightest planning path that still gives safe coverage. For small or localized diffs, stop at `test-analysis.md` and write tests directly after approval. For large, risky, or cross-cutting diffs, produce a test-focused TRD and orchestration plan.
 
 ---
 
 ## Step 1: Analyze the Branch Diff
 
-Use sub-agents if the diff is large enough to warrant it. Compare the current branch against master/main and produce a markdown summary of needed test cases, organized by changed file and/or function.
+Use sub-agents if the diff is large enough to warrant it. Compare the current branch against the repo's default branch and produce a markdown summary of needed test cases, organized by changed file and/or function.
 
 Save the analysis to: **`.agents/spec/test-analysis.md`**
 
@@ -40,6 +40,8 @@ Capture these findings in the test analysis file or carry them forward into the 
 
 ## Step 3: Write the Test TRD
 
+Only do this for the planned test path. Skip this step for small or localized diffs where direct test work is sufficient.
+
 Use the TRD template at `references/trd-template.md` (relative to this skill's directory) as the structural base. Adapt it for a test-focused scope — you won't need every section (e.g., "Database Schema" is likely irrelevant), but the work unit structure, dependency layers, and acceptance criteria format should be followed.
 
 If the developer has provided test guidelines, context files, or specific testing requirements, incorporate them into the TRD.
@@ -57,6 +59,8 @@ Each work unit in the test TRD should specify:
 
 ## Step 4: Write the Test Orchestration Plan and Memory File
 
+Only do this for the planned test path.
+
 Use the orchestration template at `references/orchestration-template.md` and the memory template at `references/memory-template.md` (both relative to this skill's directory) as structural guides.
 
 Save the orchestration plan to: **`.agents/spec/ORCHESTRATION-tests.md`**
@@ -66,18 +70,29 @@ Follow the same principles as the main orchestration plan:
 
 - Organize test work units into dependency layers (tests for foundational code in earlier layers, tests that depend on those in later layers)
 - Each work unit prompt must be self-contained — sub-agents have no access to the dispatching session
-- Include an instruction in each prompt to read and update `.agents/spec/memory-tests.md`
+- Include an instruction in each prompt to read `.agents/spec/memory-tests.md` and write results to `.agents/spec/updates-tests/<work-unit-id>.md`
 - The memory file should document: project root, implementation status per test file, existing test patterns discovered in Step 2, and coordination notes
+- Preserve traceability from planned tests to covered behaviors so a later read-only audit can verify whether the final branch actually implemented the intended coverage
+
+---
+
+## Step 5: Handoff to the Post-Test Cross-Check
+
+The planning artifacts created here should support a later implementation cross-check after test execution. That later stage is expected to use parallel read-only audit sub-agents, so make the artifacts easy to audit:
+
+- In `test-analysis.md`, clearly identify the behaviors, files, and gaps each planned test is meant to cover
+- In `TRD-tests.md`, keep work units and acceptance criteria concrete enough that an audit agent can later verify whether the tests were actually implemented
+- In `memory-tests.md`, preserve enough status detail that an audit agent can compare claimed progress against the real branch state
 
 ---
 
 ## Gate
 
-Do not execute the test orchestration plan. The developer wants to review all planning documents before proceeding:
+Do not execute any test-writing work until the developer reviews the relevant planning artifact for the chosen path:
 
 - `.agents/spec/test-analysis.md` — the branch diff analysis
 - `.agents/spec/TRD-tests.md` — the test TRD
 - `.agents/spec/ORCHESTRATION-tests.md` — the test orchestration plan
-- `.agents/spec/memory-tests.md` — the shared memory file
+- `.agents/spec/memory-tests.md` — the orchestrator-owned memory file
 
-Tell the developer these files are ready for review and wait for explicit approval before executing.
+For the direct test path, only `test-analysis.md` is required before approval. Tell the developer the relevant files are ready for review and wait for explicit approval before executing.

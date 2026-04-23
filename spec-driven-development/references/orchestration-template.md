@@ -35,7 +35,7 @@ This document breaks down the [PROJECT_NAME] MVP Technical Requirements Document
 1. Orchestrator reads this file
 2. Executes all work units in a given layer in parallel (via concurrent `task()` calls)
 3. Waits for layer to complete before moving to next layer
-4. Updates status checkboxes as units complete
+4. Consolidates per-work-unit update files into shared status artifacts as units complete
 5. If a unit fails, orchestrator halts and surfaces error; human decides to retry or skip
 
 ---
@@ -66,7 +66,7 @@ This document breaks down the [PROJECT_NAME] MVP Technical Requirements Document
 
 ## Work Units (Agent Prompts)
 
-Each work unit below is formatted as a ready-to-execute agent prompt. The orchestrator can pass the entire **Prompt** section (starting with `## Prompt`) directly to `task(description, prompt)`.
+Each work unit below is formatted as a ready-to-execute agent prompt. The orchestrator can pass the entire **Prompt** section (starting with `## Prompt`) directly to `task(description, prompt)`. Shared planning files are orchestrator-owned; sub-agents should report results via per-work-unit update files.
 
 ---
 
@@ -141,6 +141,7 @@ Create `tests/e2e/[feature].spec.ts`:
 - [Implementation note 1]
 - [Implementation note 2]
 - [Important constraint or assumption]
+- Read `.agents/spec/memory.md` first, then write your outcome to `.agents/spec/updates/WU-0.1.md` instead of editing shared status files
 
 ---
 
@@ -179,6 +180,7 @@ Create `tests/[test-location].test.ts`:
 **Notes:**
 
 - [Implementation note]
+- Read `.agents/spec/memory.md` first, then write your outcome to `.agents/spec/updates/WU-0.2.md` instead of editing shared status files
 
 ---
 
@@ -221,6 +223,7 @@ Create `tests/e2e/[feature].spec.ts`:
 **Notes:**
 
 - [Important note]
+- Read `.agents/spec/memory.md` first, then write your outcome to `.agents/spec/updates/WU-1.1.md` instead of editing shared status files
 
 ---
 
@@ -243,14 +246,18 @@ Create `tests/e2e/[feature].spec.ts`:
 
 1. **Read Prerequisites section** first; halt if any are missing
 2. **Execute layer by layer**:
-   - For each layer, spawn parallel `task()` calls for all work units marked ✅
-   - Wait for all to complete before moving to next layer
-   - Update checkboxes in-place as work units complete
+    - For each layer, spawn parallel `task()` calls for all work units marked ✅
+    - Wait for all to complete before moving to next layer
+    - Update checkboxes in-place after consolidating each work unit's update file
 3. **Handle failures**:
-   - If a work unit fails, surface the error to human
-   - Offer to retry or skip; human decides
-   - Do NOT continue to next layer until human approves
+    - If a work unit fails, surface the error to human
+    - Offer to retry or skip; human decides
+    - Do NOT continue to next layer until human approves
 4. **Maintain this document** as the source of truth for project status
+5. **Own shared writes**:
+   - Sub-agents may read shared planning files but should not edit them directly
+   - Sub-agents should write per-work-unit reports under `.agents/spec/updates/`
+   - The orchestrator consolidates those reports into `ORCHESTRATION.md` and `memory.md`
 
 ### Placeholder Key
 
