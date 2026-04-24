@@ -12,7 +12,7 @@ Start here. You need the big picture before you can explore anything.
 
 1. **What are you building?** Get a 2-3 sentence summary of the feature from the user's perspective. What does the user see and do?
 2. **Which repositories are involved?** Ask for repo names/paths and what layer each serves (server, web, mobile, infra, etc.). If the user mentions a work item ID, check for linked context files or wiki pages.
-3. **Is there an existing PRD, wiki page, or design doc?** The user may have partial documentation — an ADO wiki page, a Confluence doc, a CONTEXT.md, API documentation for an external service. Gather these paths/URLs now.
+3. **Is there an existing PRD, wiki page, or design doc?** The user may have partial documentation — an ADO wiki page, a Confluence doc, a context file, API documentation for an external service. Gather these paths/URLs now.
 
 Don't go deeper yet. You need to explore the code before you can ask good questions about data models, API surfaces, and error handling.
 
@@ -26,7 +26,7 @@ This is the most important phase. Spawn sub-agents to explore each repository in
 2. **Find analogous features** — look for existing features that are structurally similar to what's being built. How are they wired up? What patterns do they follow? These become the blueprint.
 3. **Identify the integration points** — where will the new feature connect to existing code? What models, services, or APIs will it touch?
 4. **Look for existing scaffolding** — has any groundwork already been laid? Prior PRs, existing data models, configuration sections, shared infrastructure that can be reused.
-5. **Read any documentation the user pointed to** — wiki pages, CONTEXT.md files, external API docs.
+5. **Read any documentation the user pointed to** — wiki pages, context files, external API docs.
 
 Have each sub-agent report back with a structured summary. This research directly informs the questions you'll ask in Phase 3 and the plan you'll draft in Phase 4.
 
@@ -82,7 +82,12 @@ Using `plan-template.md` as the structure, draft the plan. Key principles:
 
 6. **Never include effort estimates.** No day counts, no story points, no t-shirt sizes. The plan describes *what* changes, not *how long* it takes.
 
-Save the plan to `.agents/specs/{work-item-id}/plan.md` if a work item ID is known, otherwise to `.agents/spec/plan.md`.
+Save the plan to the selected session folder:
+
+- `.agents/specs/{work-item-id}/plan.md` when work item context is known
+- `.agents/spec/plan.md` otherwise
+
+If an existing `plan.md` already exists in that folder, update it in place. If a new file is needed, use the lowercase name `plan.md`.
 
 ---
 

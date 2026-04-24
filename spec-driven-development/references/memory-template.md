@@ -3,7 +3,7 @@
 > **Purpose:** Orchestrator-owned state file for orchestration work. Sub-agents read this file for context. The orchestrator is the only writer of this file.
 > **Source TRD:** `[path/to/technical-requirements-document.md]`
 > **Orchestration:** `[path/to/orchestration-plan.md]`
-> **Per-work-unit updates:** `.agents/spec/updates/<work-unit-id>.md`
+> **Per-work-unit updates:** `<session-folder>/updates/<work-unit-id>.md`
 
 ---
 

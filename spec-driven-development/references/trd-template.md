@@ -5,7 +5,7 @@
 **Author:** [AUTHOR_NAME]
 **Status:** Draft -- Awaiting Review
 **Branch:** `mvp`
-**Source PRD:** `.agents/spec/PRD.md`
+**Source PRD:** `<session-folder>/prd.md`
 
 ---
 

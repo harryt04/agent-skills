@@ -1,10 +1,34 @@
 [
   {
+    "query": "How do I use /spec-driven-development on this ticket? I inherited some branch work and I don't know whether I need a TRD, an audit, or just a PR description.",
+    "should_trigger": true
+  },
+  {
+    "query": "Use spec-driven-development and guide me to the right stage. I already have code changes on my branch but I'm not sure whether I should be doing the orchestration part, the cross-check, or test planning next.",
+    "should_trigger": true
+  },
+  {
+    "query": "I'm midway through implementation on a risky backend/frontend ticket and need you to tell me which stage of the workflow I'm in and whether I should switch models before we continue.",
+    "should_trigger": true
+  },
+  {
+    "query": "I have a branch with most of the feature done and a couple of tests left. Can this skill figure out what stage I should start at and what model is best for that stage?",
+    "should_trigger": true
+  },
+  {
+    "query": "/spec-driven-development plan",
+    "should_trigger": true
+  },
+  {
+    "query": "Use /spec-driven-development plan and check whether we can resume from .agents/specs/160409/ORCHESTRATION.md instead of starting over.",
+    "should_trigger": true
+  },
+  {
     "query": "I need help planning a feature that touches three repos: a Rails API, a React web app, and an iOS client. We have a rough product brief in Notion but no formal PRD yet, and I want a durable plan we can execute in parallel.",
     "should_trigger": true
   },
   {
-    "query": "Can you turn this approved PRD into a TRD and break it into parallel work units? The PRD is already at .agents/spec/PRD.md and this will involve backend, web, and infra changes.",
+    "query": "Can you turn this approved PRD into a TRD and break it into parallel work units? The PRD is already at .agents/spec/prd.md and this will involve backend, web, and infra changes.",
     "should_trigger": true
   },
   {
@@ -20,7 +44,7 @@
     "should_trigger": true
   },
   {
-    "query": "I have a half-finished spec flow already: .agents/spec/TRD.md exists, but we never generated orchestration. Pick up from there and build the execution plan instead of restarting from scratch.",
+    "query": "I have a half-finished spec flow already: .agents/spec/trd.md exists, but we never generated orchestration. Pick up from there and build the execution plan instead of restarting from scratch.",
     "should_trigger": true
   },
   {
@@ -30,6 +54,14 @@
   {
     "query": "Write the final PR description for this branch, but first verify the branch is actually complete against the existing spec and test plan. If it's not complete, stop and tell me what is still open.",
     "should_trigger": true
+  },
+  {
+    "query": "I just need help writing a couple of unit tests for one existing handler. Please don't put me into a big workflow, just help with the tests.",
+    "should_trigger": false
+  },
+  {
+    "query": "Before we touch any docs, can you tell me whether this design belongs in GraphQL or a REST endpoint? I only want architecture advice right now.",
+    "should_trigger": false
   },
   {
     "query": "Help me add unit tests for src/hooks/useDebouncedValue.ts. I only changed one hook and I don't need a big plan.",

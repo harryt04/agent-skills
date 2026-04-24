@@ -3,7 +3,7 @@
 **Version:** 1.0  
 **Date:** [DATE]  
 **Purpose:** Self-contained work unit plan for LLM orchestration agents dispatching via OpenCode Task tool  
-**Source:** `.agents/spec/[SPEC_DOCUMENT].md` (translated into executable agent prompts)  
+**Source:** `<session-folder>/[spec-document].md` (translated into executable agent prompts)  
 **Status:** Ready for orchestration
 
 ---
@@ -141,7 +141,7 @@ Create `tests/e2e/[feature].spec.ts`:
 - [Implementation note 1]
 - [Implementation note 2]
 - [Important constraint or assumption]
-- Read `.agents/spec/memory.md` first, then write your outcome to `.agents/spec/updates/WU-0.1.md` instead of editing shared status files
+- Read `<session-folder>/memory.md` first, then write your outcome to `<session-folder>/updates/WU-0.1.md` instead of editing shared status files
 
 ---
 
@@ -180,7 +180,7 @@ Create `tests/[test-location].test.ts`:
 **Notes:**
 
 - [Implementation note]
-- Read `.agents/spec/memory.md` first, then write your outcome to `.agents/spec/updates/WU-0.2.md` instead of editing shared status files
+- Read `<session-folder>/memory.md` first, then write your outcome to `<session-folder>/updates/WU-0.2.md` instead of editing shared status files
 
 ---
 
@@ -223,7 +223,7 @@ Create `tests/e2e/[feature].spec.ts`:
 **Notes:**
 
 - [Important note]
-- Read `.agents/spec/memory.md` first, then write your outcome to `.agents/spec/updates/WU-1.1.md` instead of editing shared status files
+- Read `<session-folder>/memory.md` first, then write your outcome to `<session-folder>/updates/WU-1.1.md` instead of editing shared status files
 
 ---
 
@@ -231,7 +231,7 @@ Create `tests/e2e/[feature].spec.ts`:
 
 ### For Project Leads
 
-1. **Copy this template** to `ORCHESTRATION.md` in your `.agents/` directory
+1. **Copy this template** to `orchestration.md` in the selected session folder. If an existing `ORCHESTRATION.md` is already in active use, update that file instead of renaming it.
 2. **Fill in project metadata** at the top (project name, date, spec document reference)
 3. **Define execution phases** in the Execution Phases table:
    - List all work units per layer
@@ -256,8 +256,8 @@ Create `tests/e2e/[feature].spec.ts`:
 4. **Maintain this document** as the source of truth for project status
 5. **Own shared writes**:
    - Sub-agents may read shared planning files but should not edit them directly
-   - Sub-agents should write per-work-unit reports under `.agents/spec/updates/`
-   - The orchestrator consolidates those reports into `ORCHESTRATION.md` and `memory.md`
+   - Sub-agents should write per-work-unit reports under `<session-folder>/updates/`
+   - The orchestrator consolidates those reports into the orchestration and memory artifacts in the selected session folder
 
 ### Placeholder Key
 
@@ -265,7 +265,7 @@ Create `tests/e2e/[feature].spec.ts`:
 | ------------------------ | ------------------------------------------------------------------ |
 | `[PROJECT_NAME]`         | Name of your SaaS application                                      |
 | `[DATE]`                 | Current date (YYYY-MM-DD)                                          |
-| `[SPEC_DOCUMENT]`        | Reference to your TRD or PRD in `.agents/spec/`                    |
+| `[SPEC_DOCUMENT]`        | Reference to your TRD or PRD in the selected session folder        |
 | `[RUNTIME_ENV]`          | Docker, Node.js, Python, etc.                                      |
 | `[RUNTIME_COMMAND]`      | `docker compose up`, `npm run dev`, etc.                           |
 | `[PACKAGE_MANAGER]`      | `npm`, `yarn`, `pnpm`, etc.                                        |
@@ -320,7 +320,7 @@ For a hypothetical "BlogEngine" project:
 **Version:** 1.0
 **Date:** 2026-04-15
 **Purpose:** Self-contained work unit plan for LLM orchestration agents
-**Source:** `.agents/spec/TRD.md`
+**Source:** `<session-folder>/trd.md`
 **Status:** Ready for orchestration
 
 ## Prerequisites

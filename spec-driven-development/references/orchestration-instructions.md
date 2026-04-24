@@ -4,9 +4,18 @@ These instructions are self-contained. An agent following them should be able to
 
 ---
 
+## Session Folder
+
+Before reading or writing artifacts, resolve the selected session folder:
+
+- Use `.agents/specs/<work-item-id>/` when the developer has provided or already implied a work item context.
+- Otherwise use `.agents/spec/`.
+
+Read and write all planning artifacts in that selected folder. If an existing artifact already uses an older alias such as `TRD.md` or `ORCHESTRATION.md`, continue editing that file in place instead of renaming it.
+
 ## Inputs
 
-1. **TRD** at `.agents/spec/TRD.md` (relative to the project root). This is the source document you are translating into an executable plan.
+1. **TRD** in the selected session folder. Use `trd.md` for new files, but keep using an existing `TRD.md` if that is what the folder already contains. This is the source document you are translating into an executable plan.
 2. **Orchestration template** at `references/orchestration-template.md` (relative to this skill's directory). This defines the structural format your output must follow.
 3. **Memory template** at `references/memory-template.md` (relative to this skill's directory). This defines the structural format for the companion memory file.
 
@@ -18,11 +27,11 @@ Read all three before you begin writing.
 
 Three artifacts:
 
-1. **`.agents/spec/ORCHESTRATION.md`** — a layered execution plan where each work unit is a fully self-contained agent prompt.
-2. **`.agents/spec/memory.md`** — an orchestrator-owned state file that sub-agents read for context.
-3. **`.agents/spec/updates/`** — a directory where each sub-agent writes a per-work-unit update file for the orchestrator to consolidate.
+1. **`<session-folder>/orchestration.md`** — a layered execution plan where each work unit is a fully self-contained agent prompt. If the folder already contains `ORCHESTRATION.md`, update that existing file instead of renaming it.
+2. **`<session-folder>/memory.md`** — an orchestrator-owned state file that sub-agents read for context.
+3. **`<session-folder>/updates/`** — a directory where each sub-agent writes a per-work-unit update file for the orchestrator to consolidate.
 
-All of them live in `.agents/spec/`, as siblings to the TRD.
+All of them live in the selected session folder, as siblings to the TRD.
 
 ---
 
@@ -45,7 +54,7 @@ Each work unit's `### Prompt` section is the most important part of the plan. Su
 - Any relevant codebase patterns, naming conventions, or architectural constraints
 - Dependencies to install (if any)
 - Tests to write and where they go
-- An instruction to read `.agents/spec/memory.md` at the start of the task and write results to `.agents/spec/updates/<work-unit-id>.md`
+- An instruction to read the session memory file at the start of the task and write results to `<session-folder>/updates/<work-unit-id>.md`
 
 If a sub-agent would need to "figure out" something that could be answered now, answer it in the prompt. Ambiguity in a prompt leads to inconsistent or incorrect output.
 
@@ -79,4 +88,4 @@ Before finishing, verify:
 - [ ] The execution phases table matches the actual work units and layers
 - [ ] The memory file has no placeholder content — every section is filled in for this specific project
 - [ ] Shared status files are clearly orchestrator-owned; sub-agents only write per-work-unit update files
-- [ ] The orchestration and memory files are written to `.agents/spec/`, and the update directory is documented
+- [ ] The orchestration and memory files are written to the selected session folder, and the update directory is documented

@@ -4,6 +4,15 @@ These instructions are self-contained. An agent following them should be able to
 
 ---
 
+## Session Folder
+
+Before writing the PR description, resolve the selected session folder:
+
+- Use `.agents/specs/<work-item-id>/` when the developer has provided or already implied a work item context.
+- Otherwise use `.agents/spec/`.
+
+Write new PR description artifacts to `pr-description.md` in that selected folder.
+
 ## Goal
 
 Compare the current branch against master/main and write a concise, well-structured pull request description.
@@ -23,7 +32,7 @@ Use sub-agents if the diff is large. Produce a summary that captures:
 
 ## Step 2: Write the PR Description
 
-Save the description to: **`.agents/spec/pr-description.md`**
+Save the description to: **`<session-folder>/pr-description.md`**
 
 ### Length constraints
 

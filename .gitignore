@@ -3,3 +3,4 @@ release-candidate-analyzer/*
 skill-creator/*
 find-skills/*
 peer-review/*
+snyk-fixer/*
