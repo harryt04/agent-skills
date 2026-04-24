@@ -545,4 +545,4 @@ A bloated orchestrating session loses track of the overall workflow. Use sub-age
 
 ## IMPORTANT
 
-If the user doesn't know what to do or didn't include enough context for you to know what we are doing in this session, please output the verbatim the `Default Orientation Behavior` above.
+If the user doesn't know what to do or didn't include enough context for you to know what we are doing in this session, please see if you can resume a previous session in .agents/spec/ **(NOT .agents/specs/)**. If not, please output the verbatim the `Default Orientation Behavior` above.
