@@ -189,11 +189,23 @@ Use when the developer explicitly asks to execute an orchestration artifact.
 Use only when the branch is final and no more code or test changes are expected.
 
 1. Enforce the Stage 6 model-family gate.
-2. Read only the final artifacts needed to summarize the change accurately.
-3. Use sub-agents for diff summarization if the branch is large.
-4. Draft `pr-description.md`.
-5. Keep it concise and scoped to the final branch state.
-6. Show the result and wait for edits.
+2. Treat the changed files in the branch as the primary source of truth. Read additional context only if the developer explicitly includes context files in the Stage 6 prompt.
+3. Do not read `prd.md`, `trd.md`, `orchestration.md`, `memory.md`, or other planning artifacts unless the developer explicitly includes them for Stage 6.
+4. Use sub-agents to understand the git diff before drafting the description. If more than 15 files changed, strongly prefer splitting the diff across multiple sub-agents by subsystem, area, or other natural grouping, then synthesize their summaries.
+5. Optimize for fellow software developers reviewing the branch. Focus on what changed, what matters, what is risky, and what may affect their own work.
+6. Emphasize behavior changes, integration points, risky refactors, schema or data-shape changes, externally visible contract changes, and anything that may affect other open branches or require teammates to pull latest `master`.
+7. Use concrete identifiers when they materially improve reviewer orientation, such as API names, GraphQL fields or types, major services, tables or collections, config keys, feature flags, background jobs, and externally visible endpoints.
+8. Use Azure DevOps-safe markdown only. Prefer headings, numbered lists, short paragraphs, and simple pipe tables. Avoid relying on advanced HTML, collapsible sections, alerts, wiki-only markdown features, or other formatting that may render inconsistently in Azure DevOps PR descriptions.
+9. Use one canonical information contract, but omit sections that do not add value for the current branch. The usual information categories are summary, what changed, reviewer focus or risks, breaking changes, and follow-up. You may rename headings when that improves clarity for the specific PR.
+10. Choose the format that makes each section easiest to scan at a glance. Prefer numbered lists when later reference will help reviewers. Use simple tables when they make grouped facts, impacted areas, or before-and-after data easier to consume. Do not force a section into prose if a table or numbered list is clearer.
+11. Do not include a testing section. Do not include screenshots or examples by default. Mention verification only if it materially changes reviewer understanding, such as an important validation gap or a manual concern reviewers should know about.
+12. Keep the description concise, neutral, professional, and low ceremony. Avoid hype, filler, and generic process narration.
+13. Never exceed 4000 characters. For shorter or easier-to-understand branches, target roughly 1500 characters. For larger branches, spend more of the budget only when the added detail materially improves reviewer understanding.
+14. If the draft is too long, decide what is least important and condense or drop it. Preserve reviewer-critical signal over completeness. Collapse repetitive mechanical edits and low-signal churn unless they help reviewers understand the branch.
+15. `Breaking Changes` should include anything that may force another developer to react, including contract changes, renamed or removed behavior, changed defaults or assumptions, migration-sensitive changes, and changes that may disrupt other active branches or PR builds.
+16. `Follow-Up` should include only concrete post-merge work, known deferred tasks, or explicit non-goals that reviewers should know were intentionally left out. Do not use it as a dumping ground for vague future ideas.
+17. Draft `pr-description.md` as Azure DevOps-ready markdown only. The file should contain just the final PR description text for copy-paste, with no diagnostics, no character-count note, and no internal commentary.
+18. Show the result and wait for edits.
 
 ## Stop Conditions
 
